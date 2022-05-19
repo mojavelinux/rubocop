@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'fileutils'
+
 # Class for generating documentation of all cops departments
 # @api private
 class CopsDocumentationGenerator # rubocop:disable Metrics/ClassLength
@@ -15,6 +17,7 @@ class CopsDocumentationGenerator # rubocop:disable Metrics/ClassLength
     @cops = RuboCop::Cop::Registry.global
     @config = RuboCop::ConfigLoader.default_configuration
     @docs_path = "#{Dir.pwd}/docs/modules/ROOT/pages/"
+    FileUtils.mkdir_p(@docs_path)
   end
 
   def call
@@ -269,6 +272,8 @@ class CopsDocumentationGenerator # rubocop:disable Metrics/ClassLength
 
     content = original.sub(%r{// START_COP_LIST.+// END_COP_LIST}m, content)
     File.write(path, content)
+  rescue Errno::ENOENT
+    File.write(path, table_contents)
   end
 
   def table_contents
